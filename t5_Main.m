@@ -5,7 +5,8 @@ clc
 %  constr1 < Psi(t) < constr2
 %  dy_constr1 < dPsi(t) / dt < dy_constr2
 dy_constr1 = -31;
-dy_constr2 = 27;
+dy_constr2 = 36;
+constr2 = 27;
 
 % начальные условия для исходной системы 
 % система Лоттки-Вольтерра X = (x y)
@@ -111,57 +112,55 @@ ylabel('u');
 % title('Управление u(t)');
 plot(t,u);
 
-aaa = 1;
-
 %% Убираю выход за ограничение dy / dt < dy_constr2
-[data1, data2, par, coefs] = t5_up_dPsi(Y_0, Y_end, t_0, t_end, dt, dy_constr2);
-t_1 = data1(1,:);
-Psi_1 = data1(2,:);
-dPsi_1 = data1(3,:);
-ddPsi_1 = data1(4,:);
-N1 = length(Psi_1);
-F = []; G = [];
-F = zeros(1, N1);
-G = zeros(1, N1);
-for i=1:N1
-    F(i) = f_kan([Psi_1(i) dPsi_1(i)]);
-    G(i) = g_kan([Psi_1(i) dPsi_1(i)]);
-end
-u_1 = (ddPsi_1 - F)./G;
-
-t_2 = data2(1,:);
-Psi_2 = data2(2,:);
-dPsi_2 = data2(3,:);
-ddPsi_2 = data2(4,:);
-N2 = length(Psi_2);
-F = []; G = [];
-F = zeros(1, N2);
-G = zeros(1, N2);
-for i=1:N2
-    F(i) = f_kan([Psi_2(i) dPsi_2(i)]);
-    G(i) = g_kan([Psi_2(i) dPsi_2(i)]);
-end
-u_2 = (ddPsi_2 - F)./G;
-
-set(0,'CurrentFigure',1);
-plot(t_1, Psi_1, 'g','LineWidth',1);
-plot(t_2, Psi_2, 'm','LineWidth',1);
-
-set(0,'CurrentFigure',2);
-plot(t_1, dPsi_1, 'g','LineWidth',1);
-plot(t_2, dPsi_2, 'm','LineWidth',1);
-
-set(0,'CurrentFigure',3);
-plot(t_1, u_1, 'LineStyle','-','Color','g','LineWidth', 1); % color g
-plot(t_2, u_2, 'LineStyle','-','Color','m','LineWidth', 1); % color m
-
-row = [t_1(1) t_1(end) coefs(1,:) par(1) 2 par(2) par(3)];
-
-t5_add_control_branch(row);
- 
-row = [t_2(1) t_2(end) coefs(2,:) 0 0 t_2(1) t_2(end)];
- 
-t5_add_control_branch(row);
+% [data1, data2, par, coefs] = t5_up_dPsi(Y_0, Y_end, t_0, t_end, dt, dy_constr2);
+% t_1 = data1(1,:);
+% Psi_1 = data1(2,:);
+% dPsi_1 = data1(3,:);
+% ddPsi_1 = data1(4,:);
+% N1 = length(Psi_1);
+% F = []; G = [];
+% F = zeros(1, N1);
+% G = zeros(1, N1);
+% for i=1:N1
+%     F(i) = f_kan([Psi_1(i) dPsi_1(i)]);
+%     G(i) = g_kan([Psi_1(i) dPsi_1(i)]);
+% end
+% u_1 = (ddPsi_1 - F)./G;
+% 
+% t_2 = data2(1,:);
+% Psi_2 = data2(2,:);
+% dPsi_2 = data2(3,:);
+% ddPsi_2 = data2(4,:);
+% N2 = length(Psi_2);
+% F = []; G = [];
+% F = zeros(1, N2);
+% G = zeros(1, N2);
+% for i=1:N2
+%     F(i) = f_kan([Psi_2(i) dPsi_2(i)]);
+%     G(i) = g_kan([Psi_2(i) dPsi_2(i)]);
+% end
+% u_2 = (ddPsi_2 - F)./G;
+% 
+% set(0,'CurrentFigure',1);
+% plot(t_1, Psi_1, 'g','LineWidth',1);
+% plot(t_2, Psi_2, 'm','LineWidth',1);
+% 
+% set(0,'CurrentFigure',2);
+% plot(t_1, dPsi_1, 'g','LineWidth',1);
+% plot(t_2, dPsi_2, 'm','LineWidth',1);
+% 
+% set(0,'CurrentFigure',3);
+% plot(t_1, u_1, 'LineStyle','-','Color','g','LineWidth', 1); % color g
+% plot(t_2, u_2, 'LineStyle','-','Color','m','LineWidth', 1); % color m
+% 
+% row = [t_1(1) t_1(end) coefs(1,:) par(1) 2 par(2) par(3)];
+% 
+% t5_add_control_branch(row);
+%  
+% row = [t_2(1) t_2(end) coefs(2,:) 0 0 t_2(1) t_2(end)];
+%  
+% t5_add_control_branch(row);
 %% еще раз
 % [data1, data2, par, coefs] = t5_up_dPsi([Psi_1(end) dPsi_1(end) ddPsi_1(end)], Y_end, t_1(end), t_end, dt, dy_constr2);
 % t_1 = data1(1,:);
@@ -280,6 +279,34 @@ t5_add_control_branch(row);
 % row = [t_2(1) t_2(end) coefs(2,:) 0 0 t_2(1) t_2(end)];
 %  
 % t5_add_control_branch(row);
+%% Убираю выход за ограничение y > constr2
+[data1, par, coefs] = t5_upper_Psi(Y_0, Y_end, t_0, t_end, dt, constr2);
+t_1 = data1(1,:);
+Psi_1 = data1(2,:);
+dPsi_1 = data1(3,:);
+ddPsi_1 = data1(4,:);
+N1 = length(Psi_1);
+F = []; G = [];
+F = zeros(1, N1);
+G = zeros(1, N1);
+for i=1:N1
+    F(i) = f_kan([Psi_1(i) dPsi_1(i)]);
+    G(i) = g_kan([Psi_1(i) dPsi_1(i)]);
+end
+u_1 = (ddPsi_1 - F)./G;
+
+set(0,'CurrentFigure',1);
+plot(t_1, Psi_1, 'm','LineWidth',1);
+
+set(0,'CurrentFigure',2);
+plot(t_1, dPsi_1, 'm','LineWidth',1);
+
+set(0,'CurrentFigure',3);
+plot(t_1, u_1, 'LineStyle','-','Color','m','LineWidth', 1); % color c
+
+row = [t_1(1) t_1(end) coefs(1,:) par(1) 1 par(2) par(3)];
+
+t5_add_control_branch(row);
 %% интегрирование системы по времени
 [time, traj, U] = t5_modeling(X_0, t_0, t_end);
 % [time, traj, U] = t_modeling([Psi_1(1) dPsi_1(1)],t_1(1),t_1(end));
